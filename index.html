@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MelodyFetch</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', Arial, sans-serif;
+      transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 40px;
+      overflow-x: hidden;
+    }
+
+    body.dark-mode {
+      background: linear-gradient(135deg, #0f0f1a, #121229);
+      color: #b0bec5;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 25px;
+      box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+      padding: 50px;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 30px;
+      margin-bottom: 50px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .header .logo {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header .logo i {
+      font-size: 50px;
+      color: #fff;
+      background: linear-gradient(45deg, #ff6f61, #ff8a80);
+      padding: 15px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(255, 111, 97, 0.5);
+      animation: glow 2s infinite;
+    }
+
+    @keyframes glow {
+      0% { box-shadow: 0 8px 20px rgba(255, 111, 97, 0.5); }
+      50% { box-shadow: 0 8px 30px rgba(255, 111, 97, 0.8); }
+      100% { box-shadow: 0 8px 20px rgba(255, 111, 97, 0.5); }
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      background: linear-gradient(to right, #ff6f61, #ffb347);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header .options {
+      display: flex;
+      gap: 20px;
+    }
+
+    .header .options button {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #e0e0e0;
+      cursor: pointer;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+
+    .header .options button:hover {
+      color: #ff6f61;
+      transform: scale(1.15);
+    }
+
+    .search-section {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-bar input {
+      flex: 1;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      font-size: 16px;
+      color: #e0e0e0;
+      background: rgba(0, 0, 0, 0.4);
+      min-width: 300px;
+      outline: none;
+    }
+
+    .search-bar input:focus {
+      border-color: #ff6f61;
+      box-shadow: 0 0 12px rgba(255, 111, 97, 0.4);
+    }
+
+    .search-bar input::placeholder {
+      color: #90a4ae;
+      font-style: italic;
+    }
+
+    .search-bar button {
+      background: linear-gradient(45deg, #ff6f61, #ffb347);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .search-bar button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(255, 111, 97, 0.5);
+    }
+
+    .input-section {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 30px;
+      border-radius: 20px;
+      margin-bottom: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .input-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .input-group textarea {
+      flex: 1;
+      padding: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      font-size: 16px;
+      color: #e0e0e0;
+      background: rgba(0, 0, 0, 0.4);
+      min-width: 400px;
+      height: 120px;
+      resize: vertical;
+    }
+
+    .input-group textarea:focus {
+      outline: none;
+      border-color: #ff6f61;
+      box-shadow: 0 0 12px rgba(255, 111, 97, 0.4);
+    }
+
+    .input-group textarea::placeholder {
+      color: #90a4ae;
+      font-style: italic;
+    }
+
+    .input-group .options {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .input-group select {
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #e0e0e0;
+      cursor: pointer;
+    }
+
+    .input-group select:focus {
+      outline: none;
+      border-color: #ff6f61;
+    }
+
+    .input-group button {
+      background: linear-gradient(45deg, #ff6f61, #ffb347);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .input-group button:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(255, 111, 97, 0.5);
+    }
+
+    .results-section {
+      margin-bottom: 50px;
+    }
+
+    .section-title {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #fff;
+    }
+
+    .section-title i {
+      color: #ff6f61;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .track-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 30px;
+    }
+
+    .track-card {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      padding: 25px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .track-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(45deg, rgba(255, 111, 97, 0.1), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .track-card:hover::before {
+      opacity: 1;
+    }
+
+    .track-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .track-card .thumbnail {
+      width: 100%;
+      height: 150px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .track-card .play-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .track-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .track-card .play-overlay i {
+      font-size: 40px;
+      color: #ff6f61;
+      transition: transform 0.3s ease;
+    }
+
+    .track-card .play-overlay i:hover {
+      transform: scale(1.2);
+    }
+
+    .track-card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .track-card p {
+      font-size: 15px;
+      color: #b0bec5;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    .track-card .actions {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+
+    .track-card .download-btn,
+    .track-card .preview-btn {
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .track-card .download-btn {
+      background: #34c759;
+      color: #fff;
+    }
+
+    .track-card .download-btn:hover {
+      background: #2ea844;
+      transform: translateY(-3px);
+    }
+
+    .track-card .preview-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ff6f61;
+    }
+
+    .track-card .preview-btn:hover {
+      background: rgba(255, 111, 97, 0.2);
+      transform: translateY(-3px);
+    }
+
+    .queue-section,
+    .history-section {
+      margin-bottom: 50px;
+    }
+
+    .queue-list,
+    .history-list {
+      max-height: 350px;
+      overflow-y: auto;
+      padding-right: 20px;
+    }
+
+    .queue-item,
+    .history-item {
+      display: flex;
+      align-items: center;
+      gap: 25px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 25px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .queue-item:hover,
+    .history-item:hover {
+      transform: translateX(10px);
+    }
+
+    .queue-item .thumbnail,
+    .history-item .thumbnail {
+      width: 70px;
+      height: 70px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 12px;
+    }
+
+    .queue-details,
+    .history-details {
+      flex: 1;
+    }
+
+    .queue-details h3,
+    .history-details h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #fff;
+    }
+
+    .queue-details p,
+    .history-details p {
+      font-size: 15px;
+      color: #b0bec5;
+      line-height: 1.6;
+    }
+
+    .queue-details .progress-bar {
+      width: 100%;
+      height: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 5px;
+      margin-top: 12px;
+      overflow: hidden;
+    }
+
+    .queue-details .progress-bar .progress {
+      height: 100%;
+      background: #ff6f61;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .queue-actions {
+      display: flex;
+      gap: 15px;
+    }
+
+    .queue-actions button {
+      background: none;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    .queue-actions .download-btn {
+      color: #34c759;
+    }
+
+    .queue-actions .download-btn:hover {
+      color: #2ea844;
+    }
+
+    .queue-actions .pause-btn,
+    .queue-actions .resume-btn {
+      color: #ffb347;
+    }
+
+    .queue-actions .pause-btn:hover,
+    .queue-actions .resume-btn:hover {
+      color: #ffa726;
+    }
+
+    .queue-actions .cancel-btn {
+      color: #ff6f61;
+    }
+
+    .queue-actions .cancel-btn:hover {
+      color: #e53935;
+    }
+
+    .preview-modal,
+    .settings-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+    }
+
+    .preview-modal.active,
+    .settings-modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 25px;
+      padding: 50px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .modal-content .close-btn {
+      position: absolute;
+      top: 25px;
+      right: 25px;
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #e0e0e0;
+      cursor: pointer;
+    }
+
+    .modal-content .close-btn:hover {
+      color: #ff6f61;
+    }
+
+    .modal-content .thumbnail {
+      width: 200px;
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 15px;
+      margin: 0 auto 30px;
+    }
+
+    .modal-content h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      color: #b0bec5;
+      margin-bottom: 30px;
+      line-height: 1.8;
+    }
+
+    .modal-content audio {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .modal-content audio::-webkit-media-controls-panel {
+      background: rgba(255, 111, 97, 0.2);
+    }
+
+    .modal-content .download-btn {
+      background: linear-gradient(45deg, #34c759, #2ea844);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 30px;
+      transition: transform 0.3s ease;
+    }
+
+    .modal-content .download-btn:hover {
+      transform: translateY(-5px);
+    }
+
+    .settings-modal .modal-content {
+      text-align: left;
+      max-width: 500px;
+    }
+
+    .settings-modal h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      color: #fff;
+      text-align: center;
+    }
+
+    .settings-modal .form-group {
+      margin-bottom: 25px;
+    }
+
+    .settings-modal label {
+      display: block;
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .settings-modal select {
+      width: 100%;
+      padding: 15px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #e0e0e0;
+      cursor: pointer;
+    }
+
+    .settings-modal select:focus {
+      outline: none;
+      border-color: #ff6f61;
+    }
+
+    .settings-modal .save-btn {
+      background: linear-gradient(45deg, #ff6f61, #ffb347);
+      color: #fff;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      display: block;
+      margin: 30px auto 0;
+      transition: transform 0.3s ease;
+    }
+
+    .settings-modal .save-btn:hover {
+      transform: translateY(-5px);
+    }
+
+    .footer {
+      text-align: center;
+      padding-top: 40px;
+      font-size: 16px;
+      color: #90a4ae;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      margin-top: 50px;
+    }
+
+    .queue-list::-webkit-scrollbar,
+    .history-list::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    .queue-list::-webkit-scrollbar-track,
+    .history-list::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 6px;
+    }
+
+    .queue-list::-webkit-scrollbar-thumb,
+    .history-list::-webkit-scrollbar-thumb {
+      background: #ff6f61;
+      border-radius: 6px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 30px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .search-bar,
+      .input-group,
+      .input-group .options {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .search-bar input,
+      .input-group textarea,
+      .input-group select {
+        width: 100%;
+      }
+
+      .track-card {
+        padding: 20px;
+      }
+
+      .modal-content {
+        padding: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">
+        <i class="fas fa-music"></i>
+        <h1>MelodyFetch</h1>
+      </div>
+      <div class="options">
+        <button id="settings-btn">
+          <i class="fas fa-cog"></i>
+        </button>
+        <button id="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="search-section">
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search for a song or artist (YouTube, SoundCloud, Vimeo, Spotify)...">
+        <button id="search-btn">Search</button>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <div class="input-group">
+        <textarea id="track-urls" placeholder="Paste URLs (one per line, e.g., https://www.youtube.com/watch?v=video_id or https://soundcloud.com/artist/track)"></textarea>
+        <div class="options">
+          <select id="format-select">
+            <option value="mp3">MP3</option>
+            <option value="wav">WAV</option>
+            <option value="flac">FLAC</option>
+            <option value="aac">AAC</option>
+          </select>
+          <select id="quality-select">
+            <option value="128kbps">128kbps</option>
+            <option value="256kbps">256kbps</option>
+            <option value="320kbps">320kbps</option>
+            <option value="lossless">Lossless (FLAC)</option>
+          </select>
+          <button id="fetch-button">Fetch Tracks</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-section">
+      <div class="section-title">
+        <i class="fas fa-search"></i>
+        <span>Search Results</span>
+      </div>
+      <div id="track-grid" class="track-grid"></div>
+    </div>
+
+    <div class="queue-section">
+      <div class="section-title">
+        <i class="fas fa-list"></i>
+        <span>Download Queue</span>
+      </div>
+      <div id="queue-list" class="queue-list"></div>
+    </div>
+
+    <div class="history-section">
+      <div class="section-title">
+        <i class="fas fa-history"></i>
+        <span>Download History</span>
+      </div>
+      <div id="history-list" class="history-list"></div>
+    </div>
+
+    <div class="footer">
+      © 2025 MelodyFetch. All rights reserved.
+    </div>
+  </div>
+
+  <div class="preview-modal" id="preview-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-modal-btn">×</button>
+      <div class="thumbnail" id="modal-thumbnail"></div>
+      <h2 id="modal-title"></h2>
+      <p id="modal-artist"></p>
+      <audio controls id="modal-audio"></audio>
+      <button class="download-btn" id="modal-download-btn">Download</button>
+    </div>
+  </div>
+
+  <div class="settings-modal" id="settings-modal">
+    <div class="modal-content">
+      <button class="close-btn" id="close-settings-btn">×</button>
+      <h2>Settings</h2>
+      <div class="form-group">
+        <label for="default-format">Default Format</label>
+        <select id="default-format">
+          <option value="mp3">MP3</option>
+          <option value="wav">WAV</option>
+          <option value="flac">FLAC</option>
+          <option value="aac">AAC</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="default-quality">Default Quality</label>
+        <select id="default-quality">
+          <option value="128kbps">128kbps</option>
+          <option value="256kbps">256kbps</option>
+          <option value="320kbps">320kbps</option>
+          <option value="lossless">Lossless (FLAC)</option>
+        </select>
+      </div>
+      <button class="save-btn" id="save-settings">Save</button>
+    </div>
+  </div>
+
+  <script>
+    let queue = [];
+    let history = [];
+    let tracks = [];
+    let settings = {
+      defaultFormat: 'mp3',
+      defaultQuality: '128kbps'
+    };
+
+    const searchInput = document.getElementById('search-input');
+    const searchBtn = document.getElementById('search-btn');
+    const trackUrlsInput = document.getElementById('track-urls');
+    const formatSelect = document.getElementById('format-select');
+    const qualitySelect = document.getElementById('quality-select');
+    const fetchButton = document.getElementById('fetch-button');
+    const trackGrid = document.getElementById('track-grid');
+    const queueList = document.getElementById('queue-list');
+    const historyList = document.getElementById('history-list');
+    const previewModal = document.getElementById('preview-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const modalThumbnail = document.getElementById('modal-thumbnail');
+    const modalTitle = document.getElementById('modal-title');
+    const modalArtist = document.getElementById('modal-artist');
+    const modalAudio = document.getElementById('modal-audio');
+    const modalDownloadBtn = document.getElementById('modal-download-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsBtn = document.getElementById('settings-btn');
+    const closeSettingsBtn = document.getElementById('close-settings-btn');
+    const defaultFormatSelect = document.getElementById('default-format');
+    const defaultQualitySelect = document.getElementById('default-quality');
+    const saveSettingsBtn = document.getElementById('save-settings');
+    const themeToggle = document.getElementById('theme-toggle');
+
+    let selectedTrack = null;
+
+    function customFetch(url, options) {
+      return new Promise((resolve, reject) => {
+        fetch(url, options)
+          .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+          })
+          .then(data => resolve(data))
+          .catch(error => reject(error));
+      });
+    }
+
+    function identifyPlatform(url) {
+      if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
+      if (url.includes('soundcloud.com')) return 'soundcloud';
+      if (url.includes('vimeo.com')) return 'vimeo';
+      if (url.includes('spotify.com')) return 'spotify';
+      return null;
+    }
+
+    function extractVideoId(url, platform) {
+      if (platform === 'youtube') {
+        const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+      }
+      if (platform === 'soundcloud') {
+        const regex = /soundcloud\.com\/([^\/]+)\/([^\/]+)/;
+        const match = url.match(regex);
+        return match ? `${match[1]}-${match[2]}` : null;
+      }
+      if (platform === 'vimeo') {
+        const regex = /vimeo\.com\/(\d+)/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+      }
+      if (platform === 'spotify') {
+        const regex = /spotify\.com\/track\/([a-zA-Z0-9]+)/;
+        const match = url.match(regex);
+        return match ? match[1] : null;
+      }
+      return null;
+    }
+
+    function fetchTrackData(url) {
+      const platform = identifyPlatform(url);
+      if (!platform) return Promise.reject(new Error('Unsupported platform'));
+
+      const id = extractVideoId(url, platform);
+      if (!id) return Promise.reject(new Error(`Invalid ${platform} URL`));
+
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const mockData = {
+            id: id,
+            platform: platform,
+            title: `Track ${id} (${platform})`,
+            artist: `Artist ${id}`,
+            thumbnail: platform === 'youtube' ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : 'https://via.placeholder.com/200',
+            audioUrl: url,
+            downloadUrl: url,
+            quality: qualitySelect.value,
+            format: formatSelect.value
+          };
+          resolve(mockData);
+        }, 1000);
+      });
+    }
+
+    function searchTracks(query) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const mockResults = Array.from({ length: 5 }, (_, i) => ({
+            id: `mock${i}`,
+            platform: 'youtube',
+            title: `Track ${i + 1} - ${query}`,
+            artist: `Artist ${i + 1}`,
+            thumbnail: `https://img.youtube.com/vi/dQw4w9WgXcQ/hqdefault.jpg`,
+            audioUrl: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`,
+            downloadUrl: `https://www.youtube.com/watch?v=dQw4w9WgXcQ`,
+            quality: qualitySelect.value,
+            format: formatSelect.value
+          }));
+          resolve(mockResults);
+        }, 1000);
+      });
+    }
+
+    function addToQueueFromUrl(url) {
+      fetchTrackData(url)
+        .then(data => {
+          if (!data) {
+            alert(`Could not fetch track data for URL: ${url}`);
+            return;
+          }
+
+          const track = {
+            id: Date.now(),
+            platform: data.platform,
+            title: data.title,
+            artist: data.artist,
+            thumbnail: data.thumbnail,
+            audioUrl: data.audioUrl,
+            downloadUrl: data.downloadUrl,
+            quality: data.quality,
+            format: data.format,
+            progress: 0,
+            status: 'queued',
+            intervalId: null
+          };
+
+          tracks.push(track);
+          renderTracks();
+
+          const queueItem = { ...track };
+          queue.push(queueItem);
+          renderQueue();
+          processQueueItem(queueItem.id);
+        })
+        .catch(error => {
+          alert(`Error fetching track: ${error.message}`);
+        });
+    }
+
+    function processQueueItem(id) {
+      const item = queue.find(q => q.id === id);
+      if (!item) return;
+
+      item.status = 'downloading';
+      item.progress = 0;
+      renderQueue();
+
+      let progress = 0;
+      const progressInterval = setInterval(() => {
+        if (item.status !== 'downloading') {
+          clearInterval(progressInterval);
+          return;
+        }
+
+        progress += 5;
+        item.progress = Math.min(progress, 100);
+        renderQueue();
+
+        if (item.progress === 100) {
+          clearInterval(progressInterval);
+          item.status = 'ready';
+          item.intervalId = null;
+          renderQueue();
+
+          history.push({
+            id: Date.now(),
+            title: item.title,
+            artist: item.artist,
+            thumbnail: item.thumbnail,
+            quality: item.quality,
+            format: item.format,
+            timestamp: new Date().toLocaleString()
+          });
+          renderHistory();
+        }
+      }, 200);
+
+      item.intervalId = progressInterval;
+    }
+
+    function pauseQueueItem(id) {
+      const item = queue.find(q => q.id === id);
+      if (!item || item.status !== 'downloading') return;
+
+      item.status = 'paused';
+      clearInterval(item.intervalId);
+      item.intervalId = null;
+      renderQueue();
+    }
+
+    function resumeQueueItem(id) {
+      const item = queue.find(q => q.id === id);
+      if (!item || item.status !== 'paused') return;
+
+      item.status = 'downloading';
+      renderQueue();
+      processQueueItem(id);
+    }
+
+    function renderTracks() {
+      trackGrid.innerHTML = '';
+      tracks.forEach(track => {
+        const card = document.createElement('div');
+        card.className = 'track-card';
+        card.innerHTML = `
+          <div class="thumbnail" style="background-image: url('${track.thumbnail}')">
+            <div class="play-overlay">
+              <i class="fas fa-play"></i>
+            </div>
+          </div>
+          <h3>${track.title}</h3>
+          <p>${track.artist} (${track.platform})</p>
+          <div class="actions">
+            <button class="download-btn">Download</button>
+            <button class="preview-btn">Preview</button>
+          </div>
+        `;
+        card.querySelector('.download-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          addToQueue(track);
+        });
+        card.querySelector('.preview-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          showPreviewModal(track);
+        });
+        card.addEventListener('click', () => showPreviewModal(track));
+        trackGrid.appendChild(card);
+      });
+    }
+
+    function addToQueue(track) {
+      const queueItem = {
+        id: Date.now(),
+        platform: track.platform,
+        title: track.title,
+        artist: track.artist,
+        thumbnail: track.thumbnail,
+        audioUrl: track.audioUrl,
+        downloadUrl: track.downloadUrl,
+        quality: qualitySelect.value,
+        format: formatSelect.value,
+        progress: 0,
+        status: 'queued',
+        intervalId: null
+      };
+      queue.push(queueItem);
+      renderQueue();
+      processQueueItem(queueItem.id);
+    }
+
+    function renderQueue() {
+      queueList.innerHTML = '';
+      queue.forEach(item => {
+        const queueElement = document.createElement('div');
+        queueElement.className = 'queue-item';
+        queueElement.innerHTML = `
+          <div class="thumbnail" style="background-image: url('${item.thumbnail}')"></div>
+          <div class="queue-details">
+            <h3>${item.title}</h3>
+            <p>${item.artist} (${item.platform}) - ${item.format}, ${item.quality}</p>
+            <div class="progress-bar">
+              <div class="progress" style="width: ${item.progress}%"></div>
+            </div>
+          </div>
+          <div class="queue-actions">
+            ${item.status === 'ready' ? `
+              <button class="download-btn" onclick="downloadItem(${item.id})">
+                <i class="fas fa-download"></i>
+              </button>
+            ` : ''}
+            ${item.status === 'downloading' ? `
+              <button class="pause-btn" onclick="pauseQueueItem(${item.id})">
+                <i class="fas fa-pause"></i>
+              </button>
+            ` : ''}
+            ${item.status === 'paused' ? `
+              <button class="resume-btn" onclick="resumeQueueItem(${item.id})">
+                <i class="fas fa-play"></i>
+              </button>
+            ` : ''}
+            <button class="cancel-btn" onclick="removeFromQueue(${item.id})">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        `;
+        queueList.appendChild(queueElement);
+      });
+    }
+
+    function downloadItem(id) {
+      const item = queue.find(q => q.id === id);
+      if (!item) return;
+
+      alert(`Simulated download for ${item.title} by ${item.artist} in ${item.format} at ${item.quality}. In a real implementation, this would download the audio file.`);
+
+      const a = document.createElement('a');
+      a.href = item.downloadUrl;
+      a.download = `${item.title} - ${item.artist}.${item.format}`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      removeFromQueue(id);
+    }
+
+    function removeFromQueue(id) {
+      const item = queue.find(q => q.id === id);
+      if (item && item.intervalId) {
+        clearInterval(item.intervalId);
+      }
+      queue = queue.filter(item => item.id !== id);
+      renderQueue();
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = '';
+      history.forEach(item => {
+        const historyElement = document.createElement('div');
+        historyElement.className = 'history-item';
+        historyElement.innerHTML = `
+          <div class="thumbnail" style="background-image: url('${item.thumbnail}')"></div>
+          <div class="history-details">
+            <h3>${item.title}</h3>
+            <p>${item.artist} - ${item.format}, ${item.quality} - ${item.timestamp}</p>
+          </div>
+        `;
+        historyList.appendChild(historyElement);
+      });
+    }
+
+    function showPreviewModal(track) {
+      selectedTrack = track;
+      modalThumbnail.style.backgroundImage = `url('${track.thumbnail}')`;
+      modalTitle.textContent = track.title;
+      modalArtist.textContent = `${track.artist} (${track.platform})`;
+      modalAudio.src = track.audioUrl;
+      previewModal.classList.add('active');
+    }
+
+    function loadSettings() {
+      const savedSettings = localStorage.getItem('melodyFetchSettings');
+      if (savedSettings) {
+        settings = JSON.parse(savedSettings);
+      }
+      formatSelect.value = settings.defaultFormat;
+      qualitySelect.value = settings.defaultQuality;
+      defaultFormatSelect.value = settings.defaultFormat;
+      defaultQualitySelect.value = settings.defaultQuality;
+    }
+
+    function saveSettings() {
+      settings.defaultFormat = defaultFormatSelect.value;
+      settings.defaultQuality = defaultQualitySelect.value;
+      formatSelect.value = settings.defaultFormat;
+      qualitySelect.value = settings.defaultQuality;
+      localStorage.setItem('melodyFetchSettings', JSON.stringify(settings));
+      settingsModal.classList.remove('active');
+    }
+
+    window.addEventListener('load', () => {
+      loadSettings();
+    });
+
+    fetchButton.addEventListener('click', () => {
+      const urls = trackUrlsInput.value.trim().split('\n').filter(url => url.trim() !== '');
+      if (urls.length === 0) {
+        alert('Please paste at least one URL to proceed.');
+        return;
+      }
+
+      for (const url of urls) {
+        const platform = identifyPlatform(url);
+        if (!platform) {
+          alert(`Unsupported URL: ${url}. Supported platforms: YouTube, SoundCloud, Vimeo, Spotify.`);
+          return;
+        }
+      }
+
+      urls.forEach(url => addToQueueFromUrl(url));
+      trackUrlsInput.value = '';
+    });
+
+    trackUrlsInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && e.ctrlKey) {
+        fetchButton.click();
+      }
+    });
+
+    searchBtn.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      if (!query) {
+        alert('Please enter a search query.');
+        return;
+      }
+
+      searchTracks(query)
+        .then(results => {
+          tracks = results;
+          renderTracks();
+        })
+        .catch(error => {
+          alert(`Error searching: ${error.message}`);
+        });
+    });
+
+    searchInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        searchBtn.click();
+      }
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+      previewModal.classList.remove('active');
+      modalAudio.pause();
+      selectedTrack = null;
+    });
+
+    modalDownloadBtn.addEventListener('click', () => {
+      if (selectedTrack) {
+        addToQueue(selectedTrack);
+        previewModal.classList.remove('active');
+        modalAudio.pause();
+      }
+    });
+
+    settingsBtn.addEventListener('click', () => {
+      settingsModal.classList.add('active');
+    });
+
+    closeSettingsBtn.addEventListener('click', () => {
+      settingsModal.classList.remove('active');
+    });
+
+    saveSettingsBtn.addEventListener('click', saveSettings);
+
+    themeToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      const isDark = document.body.classList.contains('dark-mode');
+      themeToggle.innerHTML = `<i class="fas ${isDark ? 'fa-sun' : 'fa-moon'}"></i>`;
+    });
+
+    formatSelect.addEventListener('change', () => {
+      if (formatSelect.value === 'flac') {
+        qualitySelect.value = 'lossless';
+        qualitySelect.disabled = true;
+      } else {
+        qualitySelect.disabled = false;
+        if (qualitySelect.value === 'lossless') {
+          qualitySelect.value = settings.defaultQuality;
+        }
+      }
+    });
+
+    renderTracks();
+    renderQueue();
+    renderHistory();
+  </script>
+</body>
+</html>
